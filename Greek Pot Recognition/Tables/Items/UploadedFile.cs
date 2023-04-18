@@ -18,6 +18,9 @@ namespace Greek_Pot_Recognition.Tables.Items
 
         [BsonElement("uploadGUID")]
         public string? UploadGuid { get; set; }
+
+        [BsonElement("mime")]
+        public string? MimeType { get; set; }
     }
 }
 

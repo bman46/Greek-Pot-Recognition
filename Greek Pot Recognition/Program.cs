@@ -1,4 +1,6 @@
-﻿using Greek_Pot_Recognition.Services;
+﻿using Greek_Pot_Recognition.Extensions;
+using Greek_Pot_Recognition.Services;
+using Greek_Pot_Recognition.Tables.Items;
 using Greek_Pot_Recognition.Tables.Repository;
 using Greek_Pot_Recognition.Tables.Repository.Interfaces;
 using MongoDB.Driver;
@@ -43,17 +45,46 @@ app.MapTus("/upload", async httpContext => new()
         {
             tusdotnet.Interfaces.ITusFile file = await eventContext.GetFileAsync();
             Dictionary<string, tusdotnet.Models.Metadata> metadata = await file.GetMetadataAsync(eventContext.CancellationToken);
-            using (Stream content = await file.GetContentAsync(eventContext.CancellationToken)) {
-                // TODO: Implement
-                //await DoSomeProcessing(content, metadata);
-                Console.WriteLine(metadata);
+            using (Stream content = await file.GetContentAsync(eventContext.CancellationToken))
+            {
+                try
+                {
+                    // TODO: Implement
+                    //await DoSomeProcessing(content, metadata);
+                    // Create file object:
+                    tusdotnet.Models.Metadata guid;
+                    tusdotnet.Models.Metadata filetype;
+                    if (metadata.TryGetValue("guid", out guid) && metadata.TryGetValue("filetype", out filetype))
+                    {
+                        UploadedFile userFile = new UploadedFile();
+                        userFile.UploadGuid = guid.GetString(System.Text.Encoding.Default);
+                        userFile.FileBase64 = content.ConvertToBase64();
+                        userFile.MimeType = filetype.GetString(System.Text.Encoding.Default);
+                        // Add file to DB:
+                        IUploadRepository uploadRepository = app.Services.GetRequiredService<IUploadRepository>();
+                        await uploadRepository.CreateNewFileAsync(userFile);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to write GUID.");
+                    }
+                }catch(Exception e)
+                {
+                    Console.WriteLine("Error: " + e);
+                }
             }
+            var terminationStore = (ITusTerminationStore)eventContext.Store;
+            await terminationStore.DeleteFileAsync(file.Id, eventContext.CancellationToken);
         },
         OnBeforeCreateAsync = ctx =>
         {
             if (!ctx.Metadata.ContainsKey("guid"))
             {
                 ctx.FailRequest("File must have a GUID.");
+            }
+            if (!ctx.Metadata.ContainsKey("filetype"))
+            {
+                ctx.FailRequest("filetype metadata must be specified. ");
             }
             return Task.CompletedTask;
         }
