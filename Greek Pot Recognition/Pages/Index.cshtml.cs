@@ -16,5 +16,11 @@ public class IndexModel : PageModel
     {
 
     }
+    public ActionResult OnPost(string uppyResult, string guid)
+    {
+        Console.WriteLine("Uppy:"+uppyResult);
+        Console.WriteLine("Guid: "+guid);
+        return LocalRedirect("/results");
+    }
 }
 

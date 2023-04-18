@@ -23,14 +23,16 @@
             .use(Tus, { endpoint: window.location.origin + "/upload" })
             .use(ImageEditor, { target: Dashboard })
             .use(Form, {
-                target: "#image",
-                submitOnSuccess: true
+                target: "#imageForm",
+                submitOnSuccess: true,
+                getMetaFromForm: true
             });
     </script>
 }
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <form method="post" >
-        <div id="uppy"></div>
+    <form id="imageForm" method="post">
+        <div class="d-flex justify-content-center" id="uppy"></div>
+        <input type="hidden" name="guid" value="@Guid.NewGuid()" />
     </form>
 </div>

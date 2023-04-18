@@ -1,4 +1,5 @@
 ﻿using tusdotnet;
+using tusdotnet.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,14 +32,20 @@ app.MapTus("/upload", async httpContext => new()
         {
             tusdotnet.Interfaces.ITusFile file = await eventContext.GetFileAsync();
             Dictionary<string, tusdotnet.Models.Metadata> metadata = await file.GetMetadataAsync(eventContext.CancellationToken);
-            using Stream content = await file.GetContentAsync(eventContext.CancellationToken);
-
-            // TODO: Implement
-            //await DoSomeProcessing(content, metadata);
-            Console.WriteLine(metadata);
+            using (Stream content = await file.GetContentAsync(eventContext.CancellationToken)) {
+                // TODO: Implement
+                //await DoSomeProcessing(content, metadata);
+                Console.WriteLine(metadata);
+            }
+        },
+        OnBeforeCreateAsync = async eventContext =>
+        {
+            tusdotnet.Interfaces.ITusFile file = await eventContext.GetFileAsync();
+            Dictionary<string, tusdotnet.Models.Metadata> metadata = await file.GetMetadataAsync(eventContext.CancellationToken);
+            Console.WriteLine("Metadata: " + metadata);
         }
     }
-});
+}); ;
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
