@@ -37,6 +37,14 @@ app.MapTus("/upload", async httpContext => new()
                 //await DoSomeProcessing(content, metadata);
                 Console.WriteLine(metadata);
             }
+        },
+        OnBeforeCreateAsync = ctx =>
+        {
+            if (!ctx.Metadata.ContainsKey("guid"))
+            {
+                ctx.FailRequest("File must have a GUID.");
+            }
+            return Task.CompletedTask;
         }
     }
 }); ;
