@@ -5,11 +5,32 @@
 }
 @section Scripts
 {
-    <script src="~/js/uploader.js" asp-append-version="true"></script>
+    <script type="module">
+        import { Uppy, Dashboard, Tus, ImageEditor, Form } from "https://releases.transloadit.com/uppy/v3.7.0/uppy.min.mjs";
+        const uppy = new Uppy({
+            restrictions: {
+                maxFileSize: 10000000,
+                maxNumberOfFiles: 1,
+                allowedFileTypes: ['image/jpeg', 'image/png']
+            }
+        });
+        uppy.use(Dashboard,
+        {
+            target: '#uppy',
+            inline: true,
+            proudlyDisplayPoweredByUppy: false
+        })
+            .use(Tus, { endpoint: window.location.origin + "/upload" })
+            .use(ImageEditor, { target: Dashboard })
+            .use(Form, {
+                target: "#image",
+                submitOnSuccess: true
+            });
+    </script>
 }
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-
-    <div id="uppy"></div>
-
+    <form method="post" >
+        <div id="uppy"></div>
+    </form>
 </div>
