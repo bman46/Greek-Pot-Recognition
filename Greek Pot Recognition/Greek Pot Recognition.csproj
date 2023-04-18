@@ -23,12 +23,10 @@
     <Folder Include="Tables\Repository\Interfaces\" />
     <Folder Include="Tables\Items" />
     <Folder Include="Tables\Items\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Pages\API\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Tables\Items\" />
-    <None Remove="Extensions\" />
     <None Remove="Pages\API\" />
   </ItemGroup>
 </Project>
