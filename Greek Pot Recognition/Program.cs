@@ -1,10 +1,21 @@
-﻿using tusdotnet;
+﻿using Greek_Pot_Recognition.Services;
+using Greek_Pot_Recognition.Tables.Repository;
+using Greek_Pot_Recognition.Tables.Repository.Interfaces;
+using MongoDB.Driver;
+using tusdotnet;
 using tusdotnet.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<IMongoDatabase>(options =>
+{
+    var config = new ConfigHandlingService();
+    var client = new MongoClient(config.MongoDBConnectionString);
+    return client.GetDatabase("greekImages");
+});
+builder.Services.AddSingleton<IUploadRepository, UploadRepository>();
 
 var app = builder.Build();
 
