@@ -37,12 +37,6 @@ app.MapTus("/upload", async httpContext => new()
                 //await DoSomeProcessing(content, metadata);
                 Console.WriteLine(metadata);
             }
-        },
-        OnBeforeCreateAsync = async eventContext =>
-        {
-            tusdotnet.Interfaces.ITusFile file = await eventContext.GetFileAsync();
-            Dictionary<string, tusdotnet.Models.Metadata> metadata = await file.GetMetadataAsync(eventContext.CancellationToken);
-            Console.WriteLine("Metadata: " + metadata);
         }
     }
 }); ;
