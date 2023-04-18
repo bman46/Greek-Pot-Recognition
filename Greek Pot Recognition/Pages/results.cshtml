@@ -4,8 +4,12 @@
     ViewData["Title"] = "results";
 }
 
-<h1>results</h1>
+<h1>Results</h1>
+
+@Model.UserFile?.UploadGuid
+
+<img src="/API/GetImage?guid=@Model.UserFile?.UploadGuid" alt="Uploaded file">
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
 }

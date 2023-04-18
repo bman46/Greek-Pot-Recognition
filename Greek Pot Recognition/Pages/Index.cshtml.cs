@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Web;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Greek_Pot_Recognition.Pages;
@@ -20,7 +21,7 @@ public class IndexModel : PageModel
     {
         Console.WriteLine("Uppy:"+uppyResult);
         Console.WriteLine("Guid: "+guid);
-        return LocalRedirect("/results");
+        return LocalRedirect("/results?guid="+ HttpUtility.UrlEncode(guid));
     }
 }
 

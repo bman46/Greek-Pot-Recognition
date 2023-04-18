@@ -4,6 +4,7 @@ using Greek_Pot_Recognition.Tables.Items;
 using Greek_Pot_Recognition.Tables.Repository;
 using Greek_Pot_Recognition.Tables.Repository.Interfaces;
 using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 using tusdotnet;
 using tusdotnet.Interfaces;
 
@@ -17,7 +18,20 @@ builder.Services.AddSingleton<IMongoDatabase>(options =>
     var client = new MongoClient(config.MongoDBConnectionString);
     return client.GetDatabase("greekImages");
 });
+builder.Services.AddSingleton<GridFSBucket>(opts =>
+{
+    var config = new ConfigHandlingService();
+    var client = new MongoClient(config.MongoDBConnectionString);
+    var db = client.GetDatabase("greekImages");
+    var options = new GridFSBucketOptions
+    {
+        BucketName = "user_files_bucket",
+        ChunkSizeBytes = 255 * 1024 //255 MB is the default value
+    };
+    return new GridFSBucket(db, options);
+});
 builder.Services.AddSingleton<IUploadRepository, UploadRepository>();
+builder.Services.AddSingleton<IFilesRepository, FileRepository>();
 
 var app = builder.Build();
 
@@ -45,33 +59,25 @@ app.MapTus("/upload", async httpContext => new()
         {
             tusdotnet.Interfaces.ITusFile file = await eventContext.GetFileAsync();
             Dictionary<string, tusdotnet.Models.Metadata> metadata = await file.GetMetadataAsync(eventContext.CancellationToken);
-            using (Stream content = await file.GetContentAsync(eventContext.CancellationToken))
+            tusdotnet.Models.Metadata guid;
+            tusdotnet.Models.Metadata filetype;
+            if (metadata.TryGetValue("guid", out guid) && metadata.TryGetValue("filetype", out filetype))
             {
-                try
-                {
-                    // TODO: Implement
-                    //await DoSomeProcessing(content, metadata);
-                    // Create file object:
-                    tusdotnet.Models.Metadata guid;
-                    tusdotnet.Models.Metadata filetype;
-                    if (metadata.TryGetValue("guid", out guid) && metadata.TryGetValue("filetype", out filetype))
-                    {
-                        UploadedFile userFile = new UploadedFile();
-                        userFile.UploadGuid = guid.GetString(System.Text.Encoding.Default);
-                        userFile.FileBase64 = content.ConvertToBase64();
-                        userFile.MimeType = filetype.GetString(System.Text.Encoding.Default);
-                        // Add file to DB:
-                        IUploadRepository uploadRepository = app.Services.GetRequiredService<IUploadRepository>();
-                        await uploadRepository.CreateNewFileAsync(userFile);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to write GUID.");
-                    }
-                }catch(Exception e)
-                {
-                    Console.WriteLine("Error: " + e);
-                }
+                // Upload to GridFS:
+                IFilesRepository gridFSBucket = app.Services.GetRequiredService<IFilesRepository>();
+                var result = await gridFSBucket.UploadAsync(file, eventContext.CancellationToken);
+
+                UploadedFile userFile = new UploadedFile();
+                userFile.UploadGuid = guid.GetString(System.Text.Encoding.Default);
+                userFile.FileID = result.ToString();
+                userFile.MimeType = filetype.GetString(System.Text.Encoding.Default);
+                // Add file to DB:
+                IUploadRepository uploadRepository = app.Services.GetRequiredService<IUploadRepository>();
+                await uploadRepository.CreateNewFileAsync(userFile);
+            }
+            else
+            {
+                Console.WriteLine("Failed to write GUID.");
             }
             var terminationStore = (ITusTerminationStore)eventContext.Store;
             await terminationStore.DeleteFileAsync(file.Id, eventContext.CancellationToken);
