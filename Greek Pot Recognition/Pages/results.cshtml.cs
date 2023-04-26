@@ -35,7 +35,7 @@ namespace Greek_Pot_Recognition.Pages
         public string PredictionString(IList<PredictionModel> predictions)
         {
             string tag = predictions.First().TagName.Replace("_", " ").Replace("Negative", "neither red nor black figure");
-            tag += ".\nConfidence: " + predictions.First().Probability;
+            tag += ".\nConfidence: " + (int)(predictions.First().Probability*100)+"%";
             return tag;
         }
     }
