@@ -9,7 +9,7 @@
         import { Uppy, Dashboard, Tus, ImageEditor, Form } from "https://releases.transloadit.com/uppy/v3.7.0/uppy.min.mjs";
         const uppy = new Uppy({
             restrictions: {
-                maxFileSize: 10000000,
+                maxFileSize: 4000000,
                 maxNumberOfFiles: 1,
                 allowedFileTypes: ['image/jpeg', 'image/png']
             }
@@ -18,7 +18,8 @@
         {
             target: '#uppy',
             inline: true,
-            proudlyDisplayPoweredByUppy: false
+            proudlyDisplayPoweredByUppy: false,
+            note: "JPEG and PNG Images only, up to 4 MB"
         })
             .use(Tus, { endpoint: window.location.origin + "/upload" })
             .use(ImageEditor, { target: Dashboard })
@@ -31,6 +32,7 @@
 }
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <p>Upload an image of a black or red figure pot for identification using machine learning.</p>
     <form id="imageForm" method="post">
         <div class="d-flex justify-content-center" id="uppy"></div>
         <input type="hidden" name="guid" value="@Guid.NewGuid()" />
