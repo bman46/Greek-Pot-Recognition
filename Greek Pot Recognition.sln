@@ -5,6 +5,8 @@ VisualStudioVersion = 25.0.1705.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Greek Pot Recognition", "Greek Pot Recognition\Greek Pot Recognition.csproj", "{02099635-4482-4324-B8CC-9EEED4F3A6E2}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{52C66058-875A-4DD8-ACE9-E9C6AAEFBD24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{02099635-4482-4324-B8CC-9EEED4F3A6E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02099635-4482-4324-B8CC-9EEED4F3A6E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02099635-4482-4324-B8CC-9EEED4F3A6E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52C66058-875A-4DD8-ACE9-E9C6AAEFBD24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C66058-875A-4DD8-ACE9-E9C6AAEFBD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52C66058-875A-4DD8-ACE9-E9C6AAEFBD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52C66058-875A-4DD8-ACE9-E9C6AAEFBD24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

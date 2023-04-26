@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  greekpotrecognition:
+    image: ${DOCKER_REGISTRY-}greekpotrecognition
+    build:
+      context: .
+      dockerfile: Greek Pot Recognition/Dockerfile
