@@ -1,5 +1,5 @@
-﻿using Greek_Pot_Recognition.Extensions;
-using Greek_Pot_Recognition.Services;
+﻿using Greek_Pot_Recognition.Services;
+using Greek_Pot_Recognition.Services.ML;
 using Greek_Pot_Recognition.Tables.Items;
 using Greek_Pot_Recognition.Tables.Repository;
 using Greek_Pot_Recognition.Tables.Repository.Interfaces;
@@ -32,6 +32,11 @@ builder.Services.AddSingleton<GridFSBucket>(opts =>
 });
 builder.Services.AddSingleton<IUploadRepository, UploadRepository>();
 builder.Services.AddSingleton<IFilesRepository, FileRepository>();
+builder.Services.AddSingleton<ImageRecognizer>(opts =>
+{
+    var config = new ConfigHandlingService();
+    return new ImageRecognizer(config.Endpoint, config.Key, config.ProjectId, config.ProjectName);
+});
 
 var app = builder.Build();
 
@@ -71,6 +76,23 @@ app.MapTus("/upload", async httpContext => new()
                 userFile.UploadGuid = guid.GetString(System.Text.Encoding.Default);
                 userFile.FileID = result.ToString();
                 userFile.MimeType = filetype.GetString(System.Text.Encoding.Default);
+
+                // Process ML
+                try
+                {
+                    ImageRecognizer rec = app.Services.GetRequiredService<ImageRecognizer>();
+                    using(var content = await file.GetContentAsync(eventContext.CancellationToken))
+                    {
+                        userFile.FileResult = rec.Classify(content);
+                        Console.WriteLine("Prediction: " + userFile.FileResult.First());
+                    }
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);
+                    userFile.FileResult = null;
+                }
+
                 // Add file to DB:
                 IUploadRepository uploadRepository = app.Services.GetRequiredService<IUploadRepository>();
                 await uploadRepository.CreateNewFileAsync(userFile);

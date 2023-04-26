@@ -6,6 +6,7 @@ using Greek_Pot_Recognition.Tables.Items;
 using Greek_Pot_Recognition.Tables.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 
 namespace Greek_Pot_Recognition.Pages
 {
@@ -30,6 +31,12 @@ namespace Greek_Pot_Recognition.Pages
                 return LocalRedirect("/");
             }
             return Page();
+        }
+        public string PredictionString(IList<PredictionModel> predictions)
+        {
+            string tag = predictions.First().TagName.Replace("_", " ").Replace("Negative", "neither red nor black figure");
+            tag += ".\nConfidence: " + predictions.First().Probability;
+            return tag;
         }
     }
 }

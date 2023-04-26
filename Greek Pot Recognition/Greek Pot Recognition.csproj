@@ -15,6 +15,7 @@
     <PackageReference Include="tusdotnet" Version="2.7.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.19.1" />
+    <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
@@ -24,9 +25,21 @@
     <Folder Include="Tables\Items" />
     <Folder Include="Tables\Items\" />
     <Folder Include="Pages\API\" />
+    <Folder Include="Services\ML\" />
+    <Folder Include="Services\ML\Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Tables\Items\" />
     <None Remove="Pages\API\" />
+    <None Remove="Services\ML\" />
+    <None Remove="Services\ML\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Services\ML\Models\labels.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\ML\Models\model.onnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
